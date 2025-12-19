@@ -1,0 +1,86 @@
+
+/* 
+  ✅ 以前はいろいろとインポートしていたが、v4からは@importのみで動く
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+    → これらは記述の必要がない
+
+    ... @import "tailwindcss"; これのみで上記3つを含んでいる
+*/
+@import "tailwindcss";
+
+/* 
+  ✅ 読み込み順（＝優先度）は👇
+    base → components → utilities 
+
+*/
+
+/* 
+  ✅ base
+  → HTMLタグそのものの初期スタイルを定義する場所
+    ...tailwindは複雑になるので、HTMLをスッキリさせたいとき
+    body, h1〜h6、a、button、inputなど
+
+    クラスを付けなくても効く
+    ブラウザデフォルトやリセットの延長
+    プロジェクト全体に影響する
+*/
+@layer base {
+  /* html {
+    @apply antialiased;
+  }
+
+  h1 {
+    @apply text-3xl font-bold;
+  }
+
+  a {
+    @apply text-blue-600 hover:underline;
+  } */
+}
+
+/* 
+  ✅ components
+  → 再利用可能なUI部品（意味のあるまとまり）
+    ボタン、カード、モーダル、ナビゲーション、フォーム部品
+    
+    ...クラスベース、何度も使う
+
+utility をまとめたもの
+*/
+@layer components {
+  /* .btn {
+    @apply inline-flex items-center justify-center
+          rounded-md px-4 py-2
+          bg-primary text-white
+          hover:bg-primary-dark;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+
+  .card {
+    @apply rounded-lg shadow-md p-6 bg-white;
+  } */
+}
+
+/* 
+  ✅ utility 
+    👉 通常は自分で書かないが、拡張は可能で自分で、新しいユーティリティを追加する場所
+
+*/
+@layer utilities {
+  /* .content-auto {
+      content-visibility: auto;
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 8px rgba(0,0,0,.2);
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+  } */
+}
