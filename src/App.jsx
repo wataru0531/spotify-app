@@ -3,10 +3,15 @@
 import { useEffect, useState } from "react";
 
 import spotify from "./lib/spotify";
+import { SongList } from "./components/SongList";
+
 
 export default function App() {
 
-  spotify.test()
+  useEffect(() => {
+    spotify.getPopularSongs()
+  }, []);
+  
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
@@ -16,6 +21,7 @@ export default function App() {
         </header>
         <section>
           <h2 className="text-2xl font-semibold mb-5">Popular Songs</h2>
+          <SongList />
         </section>
       </main>
     </div>
