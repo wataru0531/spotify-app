@@ -49,6 +49,36 @@ class SpotifyClient {
       }
     );
     // console.log(response.data);
+    return response.data.tracks;
+  }
+
+  // ✅ 曲の検索
+  async searchSongs(_keyword, _limit, _offset){ 
+    // console.log(_offset);
+
+    const response = await axios.get(
+      `https://api.spotify.com/v1/search`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+        params: { // URLの ?key=value の部分をaxiosが自動で作ってくれる仕組み
+                  // → ?q=曲名&type=track に変換されてSpotifyに送られる
+          q: _keyword,
+          type: "track", // 検索結果を曲だけに
+          limit: _limit, // 件数制限
+          offset: _offset, // ⭐️ 先頭から曲を何件スキップするか。
+                           // → Spotifyは、indexは0から並び、曲は1から始まる。
+                           // → 0なら、 0件スキップ → index 0〜19を返す
+                           // → 20なら、20件スキップ → index 20〜39 を返す
+          // market: "JP", // 日本で再生可能な曲のみ取得
+          // include_external: ,
+        }
+      }
+    );
+    // console.log(response)
+
+    return response.data.tracks;
   }
 }
 
