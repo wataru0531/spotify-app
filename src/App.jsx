@@ -1,7 +1,14 @@
 
 // import './App.css'
 
-// TODO ... 検索結果の 20 / 総合件数を表示
+// TODO ... ① 検索結果の 20 / 総合件数を表示
+//          ② 再生プレビュー
+//          ③ 起きに入れでローカルストレージに保存
+//          ④ 過去の検索キーワードを表示
+//          ⑤ 並び替え、フィルタ
+//          ⑥ ダーク、ライト切り替え
+//          ⑦ 
+
 
 import { useEffect, useState } from "react";
 
@@ -71,7 +78,7 @@ export default function App() {
     setKeyword(e.target.value);
   }
 
-  // ✅ 検索したい音楽を取得する
+  // ✅ 音楽を検索する
   const getSearchSongs = async (_page = 1) => {
     if(!spotify) return; // 
 
@@ -94,7 +101,7 @@ export default function App() {
       const result = await spotify.searchSongs(keyword, limit, offset);
       // console.log(result); // { href: 'https://api.spotify.com/v1/search?offset=0&limit=2…uki&type=track&locale=ja,en-US;q%3D0.9,en;q%3D0.8', limit: 20, next: 'https://api.spotify.com/v1/search?offset=20&limit=…uki&type=track&locale=ja,en-US;q%3D0.9,en;q%3D0.8',... }
 
-      // console.log(!result.next); // false。真偽地にして反転
+      // console.log(!result.next); // false。真偽地に変換して反転
       // console.log(!!result.next); // true。元に戻す
       setPagination({
         page: _page,

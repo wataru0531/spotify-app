@@ -2,7 +2,6 @@
 // Spotify関連の処理
 import axios from "axios";
 
-
 const SPOTIFY_ACCOUNTS_URL = "https://accounts.spotify.com/api";
 const SPOTIFY_API_URL = "https://api.spotify.com/v1";
 const POPULAR_PLAYLIST_ID = "5SLPaOxQyJ8Ne9zpmTOvSe";
@@ -13,8 +12,10 @@ class SpotifyClient {
     this.accessToken = accessToken;
     this.expiresAt = expiresAt;
 
+    // 👉 axios.create ... 設定済みのaxiosを作り使い回す。
+    //                     何度もurl、headersを書かなくていいし、
     this.api = axios.create({
-      baseURL: SPOTIFY_API_URL,
+      baseURL: SPOTIFY_API_URL, // https://accounts.spotify.com/api
       headers: {
         Authorization: `Bearer ${this.accessToken}`,
       },
@@ -24,6 +25,7 @@ class SpotifyClient {
   // ✅ スタティック
   static async initialize(){
     const { accessToken, expiresAt } = await this.#fetchAccessToken();
+
     return new SpotifyClient({ accessToken, expiresAt })
   }
 
@@ -59,8 +61,6 @@ class SpotifyClient {
       const { access_token, expires_in } = response.data;
       // console.log(expires_in); // 3600 → アクセストークンが何秒間有効か。1時間だけ有効
 
-      // ⭐️ここから⭐️ここから⭐️ここから⭐️ここから⭐️ここから⭐️ここから⭐️ここから⭐️ここから
-      // ⭐️ここから⭐️ここから⭐️ここから⭐️ここから⭐️ここから⭐️ここから⭐️ここから⭐️ここから
       // console.log(Date.now())
       return {
         accessToken: access_token,
@@ -91,17 +91,8 @@ class SpotifyClient {
     await this.#refreshTokenIfNeeded(); // トークンの更新
 
     try {
-      // const response = await axios.get(
-      //   "https://api.spotify.com/v1/playlists/5SLPaOxQyJ8Ne9zpmTOvSe",
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${this.token}` // Bearer → このトークンを持っている者が正当な利用者」という意味の認証方式名。
-      //     }
-      //   }
-      // );
-      // console.log(response.data);
-      // return response.data.tracks;
-
+      // this.apiに初期化したbaseUrl → https://api.spotify.com/v1
+      // const response = await axios.get("https://api.spotify.com/v1/playlists/5SLPaOxQyJ8Ne9zpmTOvSe", { ... }
       const response = await this.api.get(`/playlists/${_playlistId}`)
       return response.data.tracks;
     } catch(e){
@@ -118,11 +109,11 @@ class SpotifyClient {
     await this.#refreshTokenIfNeeded(); // トークンを更新
 
     try{
-      // `https://api.spotify.com/v1/search`,
+      // axios.get(`https://api.spotify.com/v1/search`, { ... }
       const response = await this.api.get("/search", {
         params: { // URLの ?key=value の部分をaxiosが自動で作ってくれる仕組み
                   // → ?q=曲名&type=track に変換されてSpotifyに送られる
-          q: _keyword,
+          q: _keyword, // 検索クエリ
           type: "track", // 検索結果を曲だけに
           limit: _limit, // 件数制限
           offset: _offset, // ⭐️ 先頭から曲を何件スキップするか。
@@ -142,8 +133,6 @@ class SpotifyClient {
     }
   }
 }
-
-// const spotify = await SpotifyClient.initialize();
 
 export default SpotifyClient;
 

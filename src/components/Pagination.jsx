@@ -1,9 +1,5 @@
 
-
-
 // Pagination.js
-
-
 
 
 export function Pagination({ moveToPrev, moveToNext }) {
