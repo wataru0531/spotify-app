@@ -135,8 +135,7 @@ export default function App() {
   // ✅ コンポーネントに描画後に発火
   useEffect(() => {
     const init = async () => {
-      // ⭐️ SpotifyClient 初期化
-      const client = await SpotifyClient.initialize();
+      const client = await SpotifyClient.getInstance(); // ⭐️ SpotifyClient 初期化。シングルトン設定
       // console.log(client)
       setSpotify(client);
 

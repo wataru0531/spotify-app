@@ -1,5 +1,6 @@
 
 // Spotify関連の処理
+
 import axios from "axios";
 
 const SPOTIFY_ACCOUNTS_URL = "https://accounts.spotify.com/api";
@@ -8,9 +9,12 @@ const POPULAR_PLAYLIST_ID = "5SLPaOxQyJ8Ne9zpmTOvSe";
 
 
 class SpotifyClient {
+  static instance = null;
+
   constructor({ accessToken, expiresAt }) {
     this.accessToken = accessToken;
     this.expiresAt = expiresAt;
+    // console.log(this.accessToken, this.expiresAt);
 
     // 👉 axios.create ... 設定済みのaxiosを作り使い回す。
     //                     何度もurl、headersを書かなくていいし、
@@ -22,11 +26,21 @@ class SpotifyClient {
     });
   }
 
-  // ✅ スタティック
-  static async initialize(){
-    const { accessToken, expiresAt } = await this.#fetchAccessToken();
+  // ✅ 初期化、シングルトン取得メソッド
+  static async getInstance(){ // static インスタンス化しなくても呼べる
+    // ⭐️ シングルトンの設定。
+    //    → インスタンスが既にあれば返す。
+    //    → 複数のコンポーネントから SpotifyClient を呼び出す場合に 毎回新しいインスタンスを作らなくて済む
+    //      状態(アクセストークン、有効期限)を アプリ全体で共通化できる
+    if(SpotifyClient.instance) {
+      return SpotifyClient.instance;
+    }
 
-    return new SpotifyClient({ accessToken, expiresAt })
+    // console.log(this)
+    const { accessToken, expiresAt } = await SpotifyClient.#fetchAccessToken();
+    SpotifyClient.instance = new SpotifyClient({ accessToken, expiresAt })
+
+    return SpotifyClient.instance
   }
 
   // ✅ 初期化 → アクセストークン付きのインスタンスを返す
@@ -72,11 +86,13 @@ class SpotifyClient {
     }
   }
 
-  // ✅ トークンの更新
-  async #refreshTokenIfNeeded() {
+  // ✅ トークンの更新 → 初期化時に設定した有効期限を超えた場合にのみ発火
+  async #refreshToken() {
     if (Date.now() < this.expiresAt) return;
+    // console.log("in")
 
     const { accessToken, expiresAt } = await SpotifyClient.#fetchAccessToken();
+    // console.log(this.accessToken, this.expiresAt);
 
     this.accessToken = accessToken;
     this.expiresAt = expiresAt;
@@ -88,7 +104,7 @@ class SpotifyClient {
     // console.log(this.token);
     if(!_playlistId) throw new Error("_playlistId が指定されていません。");
 
-    await this.#refreshTokenIfNeeded(); // トークンの更新
+    await this.#refreshToken(); // トークンの更新
 
     try {
       // this.apiに初期化したbaseUrl → https://api.spotify.com/v1
@@ -106,7 +122,7 @@ class SpotifyClient {
     // console.log(_offset);
     if(!_keyword?.trim()) throw new Error("検索キーワードが空です。");
 
-    await this.#refreshTokenIfNeeded(); // トークンを更新
+    await this.#refreshToken(); // トークンを更新
 
     try{
       // axios.get(`https://api.spotify.com/v1/search`, { ... }
